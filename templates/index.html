@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="試験会場のような音響条件を再現する、ローカル実行型リスニング練習ツール">
+    <title>Listening Environment Simulator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body data-max-file-size-mb="{{ max_file_size_mb }}">
+    <main class="shell">
+        <header class="hero">
+            <p class="eyebrow">LOCAL AUDIO PRACTICE TOOL</p>
+            <h1>Listening Environment Simulator</h1>
+            <p class="lead">
+                クリアな教材音声に、スピーカー帯域制限・室内残響・低レベルの環境ノイズを加え、
+                試験会場に近い聞き取りづらさで練習できます。
+            </p>
+        </header>
+
+        <section class="panel" aria-labelledby="upload-title">
+            <div class="panel-heading">
+                <div>
+                    <p class="step">STEP 01</p>
+                    <h2 id="upload-title">音声を選択</h2>
+                </div>
+                <span class="privacy-badge">外部保存なし</span>
+            </div>
+
+            <div id="dropZone" class="drop-zone">
+                <input id="fileInput" type="file" accept=".mp3,.wav,audio/mpeg,audio/wav" hidden>
+                <div class="upload-mark" aria-hidden="true">↑</div>
+                <p class="drop-title">MP3またはWAVをドロップ</p>
+                <p class="drop-note">最大 {{ max_file_size_mb }} MB・20分以内</p>
+                <button id="selectButton" class="button button-secondary" type="button">ファイルを選択</button>
+                <p id="selectedFile" class="selected-file" aria-live="polite">ファイルは未選択です</p>
+            </div>
+
+            <button id="processButton" class="button button-primary" type="button" disabled>
+                試験会場プリセットを適用
+            </button>
+        </section>
+
+        <section id="resultPanel" class="panel result-panel" aria-labelledby="result-title" hidden>
+            <div class="panel-heading">
+                <div>
+                    <p class="step">STEP 02</p>
+                    <h2 id="result-title">聞き比べる</h2>
+                </div>
+                <span class="success-badge">変換完了</span>
+            </div>
+
+            <div class="players">
+                <div class="player-card">
+                    <h3>Original</h3>
+                    <p>選択した元音声</p>
+                    <audio id="originalAudio" controls></audio>
+                </div>
+                <div class="player-card player-card-accent">
+                    <h3>Exam-room preset</h3>
+                    <p>帯域制限・残響・環境ノイズ</p>
+                    <audio id="processedAudio" controls></audio>
+                </div>
+            </div>
+
+            <a id="downloadLink" class="button button-primary" download>変換後のWAVを保存</a>
+        </section>
+
+        <section class="details" aria-label="処理内容">
+            <article>
+                <span>01</span>
+                <h3>Speaker EQ</h3>
+                <p>低域と高域を抑え、会場スピーカーらしい帯域に調整します。</p>
+            </article>
+            <article>
+                <span>02</span>
+                <h3>Room reverb</h3>
+                <p>同じ入力には同じ結果となる、合成インパルス応答を使用します。</p>
+            </article>
+            <article>
+                <span>03</span>
+                <h3>Ambient noise</h3>
+                <p>音声レベルに応じた控えめな環境ノイズを加えます。</p>
+            </article>
+        </section>
+
+        <p class="disclaimer">
+            特定の試験会場を厳密に再現するものではありません。自分が利用権を持つ音声のみ使用してください。
+        </p>
+    </main>
+
+    <div id="status" class="status" role="status" aria-live="polite" hidden></div>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
